@@ -96,8 +96,10 @@ public class ControladorServidorChatImpl extends UnicastRemoteObject implements 
     private void notificarUsuarios(String mensaje) throws RemoteException 
     {
         System.out.println("Invocando al método notificar usuarios desde el servidor");
-        for(UsuarioCllbckInt objUsuario: usuarios.values())
+        LinkedList<String> usuariosDisponibles = listaUsuarios();
+        for(String nicknames: usuariosDisponibles)
         {
+            UsuarioCllbckInt objUsuario = usuarios.get(nicknames);
             objUsuario.notificar(mensaje, usuarios.size());//el servidor hace el callback
             
         }
