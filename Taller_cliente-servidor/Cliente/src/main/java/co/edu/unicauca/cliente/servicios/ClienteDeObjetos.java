@@ -1,7 +1,9 @@
 package co.edu.unicauca.cliente.servicios;
 
 import co.edu.unicauca.cliente.controladores.UsuarioCllbckImpl;
+import co.edu.unicauca.cliente.utilidades.UtilidadesCheking;
 import co.edu.unicauca.cliente.utilidades.UtilidadesConsola;
+import co.edu.unicauca.cliente.utilidades.UtilidadesGenerales;
 import co.edu.unicauca.cliente.utilidades.UtilidadesRegistroC;
 import co.edu.unicauca.servidor.controladores.ControladorServidorChatInt;
 
@@ -13,21 +15,61 @@ public class ClienteDeObjetos
         try
         {
             ControladorServidorChatInt servidor;
+            UtilidadesGenerales utilidadesGenerales;
             int numPuertoRMIRegistry = 0;
             String direccionIpRMIRegistry = "";
+            int opc = 0;
+
+            string nickname = "";
             System.out.println("Cual es el la dirección ip donde se encuentra  el rmiregistry ");
             direccionIpRMIRegistry = UtilidadesConsola.leerCadena();
             System.out.println("Cual es el número de puerto por el cual escucha el rmiregistry ");
-            numPuertoRMIRegistry = UtilidadesConsola.leerEntero(); 
+            numPuertoRMIRegistry = UtilidadesConsola.leerEntero();
+
             System.out.println("Digite el mensaje a enviar al servidor: ");
             String mensaje=UtilidadesConsola.leerCadena();
 
             servidor = (ControladorServidorChatInt) UtilidadesRegistroC.obtenerObjRemoto(numPuertoRMIRegistry,direccionIpRMIRegistry, "ServidorChat");
 
             UsuarioCllbckImpl objNuevoUsuario= new UsuarioCllbckImpl();
-            servidor.registrarReferenciaUsuario(objNuevoUsuario);
-            servidor.enviarMensaje(mensaje);
 
+            do{
+                if(nickname = '\0' & (servidor.registrarReferenciaUsuario(nickname, objNuevoUsuario))){
+                    servidor.enviarMensaje(mensaje);
+                }else{
+                    //Leer nombre desde consola (nickname user)
+                    System.out.println("Digite su nickname para mostrar en el servidor: ");
+                    nickname = UtilidadesConsola.leerCadena();
+                }
+            }while(nickname = '\0' & (servidor.registrarReferenciaUsuario(nickname, objNuevoUsuario)));
+
+            do{
+                System.out.println("Seleccione una opcion del menú");
+                System.out.println("1. Enviar mensaje general");
+                System.out.println("2. Enviar mensaje privado");
+                System.out.println("3. Salir ....");
+                opc = UtilidadesConsola.leerEntero();
+
+                switch (opc) {
+                    case 1:
+                        servidor.enviarMensaje(mensaje);  
+                        break;
+                    case 2:
+                        System.out.println("Los usuarios disponibles son:");
+                        utilidadesGenerales.mostrarClientes(servidor.listaUsuarios());
+                        System.out.println("A quien desea enviarle el mensaje?:");
+                        string nicknameEnviar = UtilidadesConsola.leerCadena();
+                        servidor.enviarMensajePrivado(nicknameEnviar, mensaje);
+                        break;
+                    case 3:
+                        System.out.println("Saliendo, que tenga un bendecido dia >:)");
+                        break;
+                    default:
+                        System.out.println("Digite una opcion valida porfavorsito :D");
+                        break;
+                }
+
+            }while(opc == 3);
         }
         catch(Exception e)
         {
