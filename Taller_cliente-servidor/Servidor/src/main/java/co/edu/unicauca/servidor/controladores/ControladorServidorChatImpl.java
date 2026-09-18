@@ -42,11 +42,7 @@ public class ControladorServidorChatImpl extends UnicastRemoteObject implements 
         return bandera;       
     }
    
-    @Override
-    public void enviarMensaje(String mensaje)throws RemoteException 
-    {        
-        notificarUsuarios("un cliente envio el siguiente mensaje: " + mensaje);
-    }
+
 
     /**
      * Revisa todos los usuarios registrados realizando un callback de prueba.
@@ -90,6 +86,12 @@ public class ControladorServidorChatImpl extends UnicastRemoteObject implements 
         // 2. Retornamos solo los nicknames que siguen vivos
         return new LinkedList<>(usuarios.keySet());
     }
+
+    @Override
+    public void enviarMensaje(String mensaje)throws RemoteException
+    {
+        notificarUsuarios("un cliente envio el siguiente mensaje: " + mensaje);
+    }
     
     private void notificarUsuarios(String mensaje) throws RemoteException 
     {
@@ -98,6 +100,27 @@ public class ControladorServidorChatImpl extends UnicastRemoteObject implements 
         {
             objUsuario.notificar(mensaje, usuarios.size());//el servidor hace el callback
             
+        }
+    }
+
+    @Override
+    public void enviarMensajePrivado(String nickname, String mensaje)throws RemoteException{
+        notificarUsuarioPrivado(nickname,mensaje);
+    }
+
+    private void notificarUsuarioPrivado(String nickname, String mensaje) throws RemoteException
+    {
+        System.out.println("Invocando al método notificar usuario privado desde el servidor");
+        LinkedList<String> usuariosDisponibles = listaUsuarios();
+        for(String nicknames: usuariosDisponibles)
+        {
+           if(nicknames.equals(nickname)){
+               UsuarioCllbckInt objUsuario = usuarios.get(nickname);
+               objUsuario.notificar(mensaje, usuarios.size());//el servidor hace el callback
+           }else{
+               System.out.println("Usuario no encontrado");
+           }
+
         }
     }
 
