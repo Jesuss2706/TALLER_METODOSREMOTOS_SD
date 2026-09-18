@@ -7,7 +7,7 @@ import java.util.LinkedList;
 
 public interface ControladorServidorChatInt extends Remote
 {
-    public boolean registrarReferenciaUsuario(UsuarioCllbckInt  usuario) throws RemoteException;
+    public boolean registrarReferenciaUsuario(String nickname, UsuarioCllbckInt  usuario) throws RemoteException;
     public void enviarMensaje(String mensaje)throws RemoteException;
     public LinkedList<String> listaUsuarios()throws RemoteException;
     public void enviarMensajePrivado(String nickname, String mensaje)throws RemoteException;

@@ -1,7 +1,6 @@
 package co.edu.unicauca.cliente.servicios;
 
 import co.edu.unicauca.cliente.controladores.UsuarioCllbckImpl;
-import co.edu.unicauca.cliente.utilidades.UtilidadesCheking;
 import co.edu.unicauca.cliente.utilidades.UtilidadesConsola;
 import co.edu.unicauca.cliente.utilidades.UtilidadesGenerales;
 import co.edu.unicauca.cliente.utilidades.UtilidadesRegistroC;
@@ -15,12 +14,11 @@ public class ClienteDeObjetos
         try
         {
             ControladorServidorChatInt servidor;
-            UtilidadesGenerales utilidadesGenerales;
             int numPuertoRMIRegistry = 0;
             String direccionIpRMIRegistry = "";
             int opc = 0;
 
-            string nickname = "";
+            String nickname = "";
             System.out.println("Cual es el la dirección ip donde se encuentra  el rmiregistry ");
             direccionIpRMIRegistry = UtilidadesConsola.leerCadena();
             System.out.println("Cual es el número de puerto por el cual escucha el rmiregistry ");
@@ -34,14 +32,14 @@ public class ClienteDeObjetos
             UsuarioCllbckImpl objNuevoUsuario= new UsuarioCllbckImpl();
 
             do{
-                if(nickname = '\0' & (servidor.registrarReferenciaUsuario(nickname, objNuevoUsuario))){
+                if(nickname == "" && (servidor.registrarReferenciaUsuario(nickname, objNuevoUsuario))){
                     servidor.enviarMensaje(mensaje);
                 }else{
                     //Leer nombre desde consola (nickname user)
                     System.out.println("Digite su nickname para mostrar en el servidor: ");
                     nickname = UtilidadesConsola.leerCadena();
                 }
-            }while(nickname = '\0' & (servidor.registrarReferenciaUsuario(nickname, objNuevoUsuario)));
+            }while(nickname == "" && (servidor.registrarReferenciaUsuario(nickname, objNuevoUsuario)));
 
             do{
                 System.out.println("Seleccione una opcion del menú");
@@ -56,9 +54,9 @@ public class ClienteDeObjetos
                         break;
                     case 2:
                         System.out.println("Los usuarios disponibles son:");
-                        utilidadesGenerales.mostrarClientes(servidor.listaUsuarios());
+                        UtilidadesGenerales.mostrarClientes(servidor.listaUsuarios());
                         System.out.println("A quien desea enviarle el mensaje?:");
-                        string nicknameEnviar = UtilidadesConsola.leerCadena();
+                        String nicknameEnviar = UtilidadesConsola.leerCadena();
                         servidor.enviarMensajePrivado(nicknameEnviar, mensaje);
                         break;
                     case 3:
