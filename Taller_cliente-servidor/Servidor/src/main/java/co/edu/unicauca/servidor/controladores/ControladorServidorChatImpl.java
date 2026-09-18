@@ -25,21 +25,23 @@ public class ControladorServidorChatImpl extends UnicastRemoteObject implements 
     @Override
     public synchronized boolean  registrarReferenciaUsuario(String nickname, UsuarioCllbckInt usuario) throws RemoteException
     {
-       //método que unicamente puede ser accedido por un hilo
-	System.out.println("Invocando al método registrar usuario desde el servidor");
         boolean bandera=false;
-        /*if (!usuarios.contains(usuario))
-        {
-            bandera=usuarios.add(usuario);  
-        }    */
-        if (!usuarios.containsKey(nickname)){
-            usuarios.put(nickname, usuario);
-            bandera = true;
+        if (nickname.isEmpty()){
+            System.out.println("El nickname esta vacío");
+            return bandera;
         }else{
-            System.out.println("El nickname ya esta en uso");
-            bandera = false;
+            //método que unicamente puede ser accedido por un hilo
+            System.out.println("Invocando al método registrar usuario desde el servidor");
+            if (usuarios.containsKey(nickname)){
+                System.out.println("El nickname ya esta en uso");
+                bandera = false;
+            }else{
+                usuarios.put(nickname, usuario);
+                bandera = true;
+            }
+            return bandera;
         }
-        return bandera;       
+
     }
    
 
