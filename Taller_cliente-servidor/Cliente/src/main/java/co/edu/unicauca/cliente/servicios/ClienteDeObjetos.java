@@ -24,16 +24,15 @@ public class ClienteDeObjetos
             System.out.println("Cual es el número de puerto por el cual escucha el rmiregistry ");
             numPuertoRMIRegistry = UtilidadesConsola.leerEntero();
 
-            System.out.println("Digite el mensaje a enviar al servidor: ");
-            String mensaje=UtilidadesConsola.leerCadena();
+
 
             servidor = (ControladorServidorChatInt) UtilidadesRegistroC.obtenerObjRemoto(numPuertoRMIRegistry,direccionIpRMIRegistry, "ServidorChat");
 
             UsuarioCllbckImpl objNuevoUsuario= new UsuarioCllbckImpl();
 
             do{
-                if(nickname == "" && (servidor.registrarReferenciaUsuario(nickname, objNuevoUsuario))){
-                    servidor.enviarMensaje(mensaje);
+                if(nickname != "" && (servidor.registrarReferenciaUsuario(nickname, objNuevoUsuario))){
+                    System.out.println("Usuario creado con exito");
                 }else{
                     //Leer nombre desde consola (nickname user)
                     System.out.println("Digite su nickname para mostrar en el servidor: ");
@@ -50,14 +49,18 @@ public class ClienteDeObjetos
 
                 switch (opc) {
                     case 1:
-                        servidor.enviarMensaje(mensaje);  
+                        System.out.println("Digite el mensaje a enviar al servidor: ");
+                        String mensajeGeneral = UtilidadesConsola.leerCadena();
+                        servidor.enviarMensaje(mensajeGeneral);  
                         break;
                     case 2:
                         System.out.println("Los usuarios disponibles son:");
                         UtilidadesGenerales.mostrarClientes(servidor.listaUsuarios());
                         System.out.println("A quien desea enviarle el mensaje?:");
                         String nicknameEnviar = UtilidadesConsola.leerCadena();
-                        servidor.enviarMensajePrivado(nicknameEnviar, mensaje);
+                        System.out.println("Digite el mensaje a enviar: ");
+                        String mensajePrivado = UtilidadesConsola.leerCadena();
+                        servidor.enviarMensajePrivado(nicknameEnviar, mensajePrivado);
                         break;
                     case 3:
                         System.out.println("Saliendo, que tenga un bendecido dia >:)");
