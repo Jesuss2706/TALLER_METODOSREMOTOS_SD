@@ -1,6 +1,5 @@
 package co.edu.unicauca.servidor.controladores;
 
-
 import co.edu.unicauca.cliente.controladores.UsuarioCllbckInt;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -11,31 +10,31 @@ import java.util.List;
 
 public class ControladorServidorChatImpl extends UnicastRemoteObject implements ControladorServidorChatInt {
 
-    //private final List<UsuarioCllbckInt> usuarios;//lista que almacena la referencia remota de los clientes
+    // private final List<UsuarioCllbckInt> usuarios;//lista que almacena la
+    // referencia remota de los clientes
     private final HashMap<String, UsuarioCllbckInt> usuarios;
 
-
-    public ControladorServidorChatImpl() throws RemoteException
-    {
-        super();//asignamos el puerto 
-        //usuarios= new ArrayList();
-        usuarios= new HashMap<>();
+    public ControladorServidorChatImpl() throws RemoteException {
+        super();// asignamos el puerto
+        // usuarios= new ArrayList();
+        usuarios = new HashMap<>();
     }
-    
+
     @Override
-    public synchronized boolean  registrarReferenciaUsuario(String nickname, UsuarioCllbckInt usuario) throws RemoteException
-    {
-        boolean bandera=false;
-        if (nickname.isEmpty()){
+    public synchronized boolean registrarReferenciaUsuario(String nickname, UsuarioCllbckInt usuario)
+            throws RemoteException {
+        limpiarUsuariosDesconectados();
+        boolean bandera = false;
+        if (nickname.isEmpty()) {
             System.out.println("El nickname esta vacío");
             return bandera;
-        }else{
-            //método que unicamente puede ser accedido por un hilo
+        } else {
+            // método que unicamente puede ser accedido por un hilo
             System.out.println("Invocando al método registrar usuario desde el servidor");
-            if (usuarios.containsKey(nickname)){
+            if (usuarios.containsKey(nickname)) {
                 System.out.println("El nickname ya esta en uso");
                 bandera = false;
-            }else{
+            } else {
                 usuarios.put(nickname, usuario);
                 bandera = true;
             }
@@ -43,8 +42,6 @@ public class ControladorServidorChatImpl extends UnicastRemoteObject implements 
         }
 
     }
-   
-
 
     /**
      * Revisa todos los usuarios registrados realizando un callback de prueba.
@@ -59,7 +56,8 @@ public class ControladorServidorChatImpl extends UnicastRemoteObject implements 
 
             try {
                 // Callback de prueba (heartbeat/ping)
-                // Se puede usar un método dedicado como objUsuario.ping() si tu interfaz lo tiene,
+                // Se puede usar un método dedicado como objUsuario.ping() si tu interfaz lo
+                // tiene,
                 // o enviar una señal mínima.
                 objUsuario.notificar("PING", usuarios.size());
             } catch (RemoteException e) {
@@ -90,42 +88,42 @@ public class ControladorServidorChatImpl extends UnicastRemoteObject implements 
     }
 
     @Override
-    public void enviarMensaje(String mensaje)throws RemoteException
-    {
-        notificarUsuarios("un cliente envio el siguiente mensaje: " + mensaje);
+    public void enviarMensaje(String nicknameEmisor, String mensaje) throws RemoteException {
+        notificarUsuarios(nicknameEmisor + " envió un mensaje general: " + mensaje);
     }
-    
-    private void notificarUsuarios(String mensaje) throws RemoteException 
-    {
+
+    private void notificarUsuarios(String mensaje) throws RemoteException {
         System.out.println("Invocando al método notificar usuarios desde el servidor");
         LinkedList<String> usuariosDisponibles = listaUsuarios();
-        for(String nicknames: usuariosDisponibles)
-        {
+        for (String nicknames : usuariosDisponibles) {
             UsuarioCllbckInt objUsuario = usuarios.get(nicknames);
-            objUsuario.notificar(mensaje, usuarios.size());//el servidor hace el callback
-            
+            objUsuario.notificar(mensaje, usuarios.size());// el servidor hace el callback
         }
     }
 
     @Override
-    public void enviarMensajePrivado(String nickname, String mensaje)throws RemoteException{
-        notificarUsuarioPrivado(nickname,mensaje);
+    public boolean enviarMensajePrivado(String nicknameEmisor, String nicknameDestinatario, String mensaje) throws RemoteException {
+        return notificarUsuarioPrivado(nicknameEmisor, nicknameDestinatario, mensaje);
     }
 
-    private void notificarUsuarioPrivado(String nickname, String mensaje) throws RemoteException
-    {
+    private boolean notificarUsuarioPrivado(String nicknameEmisor, String nicknameDestinatario, String mensaje) throws RemoteException {
         System.out.println("Invocando al método notificar usuario privado desde el servidor");
         LinkedList<String> usuariosDisponibles = listaUsuarios();
-        for(String nicknames: usuariosDisponibles)
-        {
-           if(nicknames.equals(nickname)){
-               UsuarioCllbckInt objUsuario = usuarios.get(nickname);
-               objUsuario.notificar(mensaje, usuarios.size());//el servidor hace el callback
-           }else{
-               System.out.println("Usuario no encontrado");
-           }
-
+        for (String nicknames : usuariosDisponibles) {
+            if (nicknames.equals(nicknameDestinatario)) {
+                UsuarioCllbckInt objUsuario = usuarios.get(nicknameDestinatario);
+                try {
+                    objUsuario.notificar(nicknameEmisor + " te envió un mensaje privado: " + mensaje, usuarios.size());// el servidor hace el callback
+                    return true;
+                } catch (RemoteException e) {
+                    System.out.println("El usuario " + nicknameDestinatario + " falló al recibir el mensaje privado.");
+                    limpiarUsuariosDesconectados();
+                    return false;
+                }
+            }
         }
+        System.out.println("Usuario no encontrado");
+        return false;
     }
 
 }
