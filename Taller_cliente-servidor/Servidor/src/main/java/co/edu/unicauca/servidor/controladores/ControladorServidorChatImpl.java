@@ -16,8 +16,19 @@ public class ControladorServidorChatImpl extends UnicastRemoteObject implements 
 
     public ControladorServidorChatImpl() throws RemoteException {
         super();// asignamos el puerto
-        // usuarios= new ArrayList();
         usuarios = new HashMap<>();
+        Thread heartbeat = new Thread(() -> {
+            while (true) {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    return;
+                }
+                limpiarUsuariosDesconectados();
+            }
+        }, "heartbeat");
+        heartbeat.setDaemon(true); 
+        heartbeat.start();
     }
 
     @Override
