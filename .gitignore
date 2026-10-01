@@ -1,0 +1,27 @@
+# Compilados de Java
+*.class
+*.lst
+*.jar
+*.war
+
+# Carpetas de compilación de Maven
+target/
+
+# Compilación manual con javac (si usaste -d bin)
+bin/
+fuentes.txt
+
+# Logs y archivos temporales
+*.log
+hs_err_pid*
+
+# IntelliJ IDEA
+.idea/workspace.xml
+.idea/shelf/
+out/
+*.iws
+
+# Sistema operativo
+Thumbs.db
+desktop.ini
+.DS_Store
