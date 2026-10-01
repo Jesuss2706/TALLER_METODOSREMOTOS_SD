@@ -137,4 +137,23 @@ public class ControladorServidorChatImpl extends UnicastRemoteObject implements 
         return false;
     }
 
+    @Override
+    public synchronized boolean desconectarUsuario(String nickname) throws RemoteException {
+        System.out.println("Invocando al método desconectar usuario desde el servidor");
+        if (nickname == null || usuarios.remove(nickname) == null) {
+            System.out.println("El usuario " + nickname + " no estaba registrado.");
+            return false;
+        }
+        System.out.println("El usuario " + nickname + " salió del chat. Usuarios conectados: " + usuarios.size());
+
+        for (HashMap.Entry<String, UsuarioCllbckInt> entry : usuarios.entrySet()) {
+            try {
+                entry.getValue().notificar(nickname + " salió del chat.", usuarios.size());
+            } catch (RemoteException e) {
+                System.out.println("No se pudo notificar a " + entry.getKey() + " la salida de " + nickname);
+            }
+        }
+        return true;
+    }
+
 }

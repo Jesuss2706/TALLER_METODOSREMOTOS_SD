@@ -85,6 +85,15 @@ public class ClienteDeObjetos {
                         }
                         break;
                     case 3:
+                        try {
+                            if (servidor.desconectarUsuario(nickname)) {
+                                System.out.println("El servidor te eliminó de la lista de usuarios.");
+                            }
+                        } catch (java.rmi.RemoteException e) {
+                            System.out.println("No se pudo avisar al servidor: " + e.getMessage());
+                        }
+                        // Dejar de exportar el objeto callback para que el proceso termine limpio
+                        java.rmi.server.UnicastRemoteObject.unexportObject(objNuevoUsuario, true);
                         System.out.println("Saliendo, que tenga un bendecido dia >:)");
                         System.exit(0);
                         break;

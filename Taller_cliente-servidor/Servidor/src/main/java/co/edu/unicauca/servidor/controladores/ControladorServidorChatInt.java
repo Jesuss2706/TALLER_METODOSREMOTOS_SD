@@ -13,6 +13,7 @@ public interface ControladorServidorChatInt extends Remote
     public void enviarMensaje(String nicknameEmisor, String mensaje)throws RemoteException;
     public LinkedList<String> listaUsuarios()throws RemoteException;
     public boolean enviarMensajePrivado(String nicknameEmisor, String nicknameDestinatario, String mensaje)throws RemoteException;
+    public boolean desconectarUsuario(String nickname) throws RemoteException;
 }
 
 
